@@ -10,7 +10,7 @@ const jwtMiddleware = (req,res,next)=>{
         req.payload = jwtResponse.userMail
        next()        
     }catch(err){
-      res.status(401).json("Invalid Token,err")
+      res.status(401).json("Invalid Token",err)
     }
     
     
