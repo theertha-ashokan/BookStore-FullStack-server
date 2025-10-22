@@ -7,14 +7,17 @@ const router = express.Router()
 
 // register 
 router.post('/register',userController.registerController)
-// login
+
 router.post('/login',userController.loginController)
 
-// Google login
-router.post('/google-login',userController.googleLoginController) 
+router.post('/google-login',userController.googleLoginController)
 
-// add book
-router.post('/add-book',jwtMiddleware,multerConfig.array('uploadImges',3),bookController.addBookController) 
+router.post('/add-book',jwtMiddleware,multerConfig.array('uploadImages',3),bookController.addBookController)
 
+router.get('/home-books',bookController.getHomeBooks)
+
+router.get('/all-books',jwtMiddleware,bookController.getAllBooks)
+
+router.get('/books/:id/view',jwtMiddleware,bookController.viewBookController)
 
 module.exports = router

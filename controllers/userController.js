@@ -1,16 +1,12 @@
 const users = require('../models/userModel')
-const jwt =require('jsonwebtoken')
-
-// register
+const jwt = require('jsonwebtoken')
 exports.registerController = async (req,res)=>{
     console.log("Inside Register API");
     // console.log(req.body);
     const {username,email,password} = req.body
-    // console.log(username,email,password);
+    console.log(username,email,password);
     try{
         const existingUser = await users.findOne({email})
-        console.log(existingUser);
-        
         if(existingUser){
             res.status(409).json("User already exist!!! Please Login")
         }else{
@@ -19,10 +15,7 @@ exports.registerController = async (req,res)=>{
                 email,
                 password
             })
-            
             await newUser.save()
-                        console.log(newUser);
-
             res.status(200).json(newUser)
         }
 
@@ -30,9 +23,8 @@ exports.registerController = async (req,res)=>{
           res.status(500).json(err)
     }
     
-}
+} 
 
-// login
 exports.loginController = async (req,res)=>{
     console.log("Inside Login Api");
 
@@ -42,26 +34,25 @@ exports.loginController = async (req,res)=>{
         const existingUser = await users.findOne({email})
         if(existingUser){
             if(existingUser.password == password){
-                // token
-                const token =jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
-                res.status(200).json({user:existingUser,token})
-            }else{
-                res.status(200).json("invalid email /password...")
-            }
-            res.status(200).json({user:existingUser})
+            const token = jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
+            res.status(200).json({user:existingUser,token})
+            
         }else{
            
-            res.status(404).json("Account doesnot exist...")
+            res.status(401).json("Invalid Email/Password")
         }
+        }else{
+            res.status(404).json('Account doenot exist')
+        }
+        
 
-    }catch{
+    }catch(err){
           res.status(500).json(err)
     }
     
     
 }
 
-// google login
 exports.googleLoginController = async (req,res)=>{
     console.log("Inside Google Login Api");
 
@@ -70,21 +61,23 @@ exports.googleLoginController = async (req,res)=>{
     try{
         const existingUser = await users.findOne({email})
         if(existingUser){
-           
-                // token
-                const token =jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
-                res.status(200).json({user:existingUser,token})
-        }else{
-           const newUser = new users({
-            username,email,password,profile
-           })
-           await newUser.save()
-            // token
-                const token =jwt.sign({userMail:newUser.email},process.env.JWTSECRET)
-                res.status(200).json({user:newUser,token})
-        }
+              const token = jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
+            res.status(200).json({user:existingUser,token})
 
-    }catch{
+        }else{
+            const newUser = new users({
+                username,
+            email,
+            password,profile
+            })
+            await newUser.save()
+            const token = jwt.sign({userMail:newUser.email},process.env.JWTSECRET)
+            res.status(200).json({user:newUser,token})
+
+        }
+        
+
+    }catch(err){
           res.status(500).json(err)
     }
     
