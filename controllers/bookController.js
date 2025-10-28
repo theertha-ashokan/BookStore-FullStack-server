@@ -1,4 +1,5 @@
 const books = require('../models/bookModel')
+// add books
 
 exports.addBookController = async (req,res)=>{
     console.log("Inside addBookController");
@@ -75,6 +76,7 @@ exports.viewBookController = async (req, res) => {
     }
 }
 
+// ---------------------------admin------------------------------------------------------------------------
 
 // get all user books
 exports.getAllUserBooksController = async(req,res) =>{
@@ -90,7 +92,6 @@ exports.getAllUserBooksController = async(req,res) =>{
     }
     
 }
-
 
 // get all user bought book
 exports.getAllUserBoughtBooksController = async(req,res) =>{
@@ -119,4 +120,30 @@ exports.deleteUserBookController = async (req,res)=>{
     }catch(err){
          res.status(500).json(err)
     }
+}
+
+//get all books to admin
+exports.getAllBooksAdminController = async (req, res) => {
+    console.log('Inside getAllBooksAdminController');
+    try {
+        const allAdminBooks = await books.find()
+        res.status(200).json(allAdminBooks)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+// update book status
+exports.updateBookStatusController = async (req,res)=>{
+    console.log("Inside updateBookStatusController");
+    const {_id,title,author,noOfPages,imageUrl,price,discountPrice,abstract,publisher,language,isbn,category,uploadImg,userMail,bought} = req.body
+    try{
+       const updateBook = await books.findByIdAndUpdate({_id},{title,author,noOfPages,imageUrl,price,discountPrice,abstract,publisher,language,isbn,category,uploadImg,status:"approved",userMail,bought},{new:true})
+       await updateBook.save()
+       res.status(200).json(updateBook)   
+    }catch(err){
+        res.status(500).json(err)
+    }
+  
+    
 }

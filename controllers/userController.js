@@ -1,5 +1,9 @@
 const users = require('../models/userModel')
 const jwt = require('jsonwebtoken')
+
+// ======================================user=============================================================
+
+// register
 exports.registerController = async (req,res)=>{
     console.log("Inside Register API");
     // console.log(req.body);
@@ -25,6 +29,7 @@ exports.registerController = async (req,res)=>{
     
 } 
 
+// login
 exports.loginController = async (req,res)=>{
     console.log("Inside Login Api");
 
@@ -34,7 +39,7 @@ exports.loginController = async (req,res)=>{
         const existingUser = await users.findOne({email})
         if(existingUser){
             if(existingUser.password == password){
-            const token = jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
+            const token = jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.JWTSECRET)
             res.status(200).json({user:existingUser,token})
             
         }else{
@@ -53,6 +58,7 @@ exports.loginController = async (req,res)=>{
     
 }
 
+// google login
 exports.googleLoginController = async (req,res)=>{
     console.log("Inside Google Login Api");
 
@@ -61,7 +67,7 @@ exports.googleLoginController = async (req,res)=>{
     try{
         const existingUser = await users.findOne({email})
         if(existingUser){
-              const token = jwt.sign({userMail:existingUser.email},process.env.JWTSECRET)
+              const token = jwt.sign({userMail:existingUser.email,role:existingUser.role},process.env.JWTSECRET)
             res.status(200).json({user:existingUser,token})
 
         }else{
@@ -82,4 +88,36 @@ exports.googleLoginController = async (req,res)=>{
     }
     
     
+}
+
+// profile edit user
+exports.userProfileEditController = async (req,res)=>{
+    console.log("Iside userProfileEditController");
+    
+    // get data to upload - from req,payload ,file
+    const {username,password,bio,role,profile} = req.body
+    const email = req.payload
+    const uploadprofile = req.file?req.file.filename:profile
+
+    try{
+
+        const updateUser = await users.findOneAndUpdate({email},{username,email,password,profile:uploadprofile,bio,role},{new:true})
+        await updateUser.save()
+        res.status(200).json(updateUser)
+    }catch(err){
+     res.status(500).json(err)
+    }
+}
+
+// ======================================Admin=============================================================
+
+exports.getAllUserController = async(req,res)=>{
+    console.log("Inside getAllUserController");
+    const email = req.payload
+    try{
+        const allUsers = await users.find({email:{$ne:email}})
+        res.status(200).json(allUsers)
+    }catch(err){
+        res.status(500).json(err)
+    }  
 }
