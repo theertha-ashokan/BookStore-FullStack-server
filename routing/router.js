@@ -54,4 +54,7 @@ router.get('/admin-all-books',adminJwtMiddleware,bookController.getAllBooksAdmin
 // approve book
 router.put('/admin/book/approve',adminJwtMiddleware,bookController.updateBookStatusController)
 
+// edit adnin profile
+router.put('/admin-profile/edit',adminJwtMiddleware,multerConfig.single('profile'),userController.adminProfileEditController)
+
 module.exports = router
