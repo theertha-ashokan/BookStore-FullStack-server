@@ -122,7 +122,7 @@ exports.getAllUserController = async(req,res)=>{
     }  
 }
 
-// edit admin profile
+// update & reset admin profile
 exports.adminProfileEditController = async(req,res)=>{
     console.log("Inside adminProfileEditController");
     const {username,password,role,profile} = req.body
